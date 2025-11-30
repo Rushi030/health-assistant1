@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Assistant App</title>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Bootstrap CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage" class="container mt-5">
+  <div class="text-center mb-4">
+    <i class="fa-solid fa-heartbeat" style="font-size: 60px; color: #0868d8;"></i>
+    <h2 class="mt-3"><strong>Health Assistant</strong> Login</h2>
+    <p style="color: #666;">Welcome back! Please login to continue</p>
+  </div>
+
+  <div class="card p-4 mt-3">
+    <div id="loginError" class="alert alert-danger d-none"></div>
+
+    <label class="form-label">Email Address</label>
+    <input type="email" id="email" class="form-control mb-3" placeholder="you@example.com" required>
+
+    <label class="form-label">Password</label>
+    <div class="input-group mb-3">
+      <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+      <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password', this)">
+        <i class="fa-regular fa-eye"></i>
+      </button>
+    </div>
+
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" id="rememberMe">
+      <label class="form-check-label" for="rememberMe">Remember me on this device</label>
+    </div>
+
+    <button type="button" onclick="login()" class="btn btn-primary w-100 mb-3">
+      <i class="fas fa-sign-in-alt"></i> Log In
+    </button>
+
+    <div class="text-center">
+      <small>Don't have an account?
+        <a href="#" onclick="showSignup()" style="color: #0868d8; font-weight: 600;">Create one</a>
+      </small>
+    </div>
+  </div>
+</div>
+
+<!-- SIGNUP -->
+<div id="signupPage" class="container mt-5" style="display:none;">
+  <div class="text-center mb-4">
+    <i class="fa-solid fa-user-plus" style="font-size: 60px; color: #0868d8;"></i>
+    <h2 class="mt-3"><strong>Create</strong> Account</h2>
+    <p style="color: #666;">Join us and start managing your health</p>
+  </div>
+
+  <div class="card p-4 mt-3">
+    <div id="signupError" class="alert alert-danger d-none"></div>
+    <div id="signupSuccess" class="alert alert-success d-none"></div>
+
+    <label class="form-label">Full Name</label>
+    <input type="text" id="su_name" class="form-control mb-3" placeholder="Your name" required>
+
+    <label class="form-label">Email Address</label>
+    <input type="email" id="su_email" class="form-control mb-3" placeholder="you@example.com" required>
+
+    <label class="form-label">Password</label>
+    <div class="input-group mb-3">
+      <input type="password" id="su_password" class="form-control" placeholder="At least 6 characters" required>
+      <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('su_password', this)">
+        <i class="fa-regular fa-eye"></i>
+      </button>
+    </div>
+
+    <label class="form-label">Confirm Password</label>
+    <div class="input-group mb-3">
+      <input type="password" id="su_confirm" class="form-control" placeholder="Re-type password" required>
+      <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('su_confirm', this)">
+        <i class="fa-regular fa-eye"></i>
+      </button>
+    </div>
+
+    <button type="button" onclick="signUp()" class="btn btn-success w-100 mb-3">
+      <i class="fas fa-user-check"></i> Create Account
+    </button>
+
+    <div class="text-center">
+      <small>Already have an account?
+        <a href="#" onclick="showLogin()" style="color: #0868d8; font-weight: 600;">Log in</a>
+      </small>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" style="display:none;">
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark bg-dark p-3 d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+      <span class="navbar-brand mb-0">
+        <i class="fa-solid fa-heart-pulse"></i> Health Assistant
+      </span>
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+      <!-- Dark Mode Toggle -->
+      <button type="button" class="theme-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+        <i id="themeIcon" class="fas fa-moon"></i>
+      </button>
+      
+      <!-- User Greeting -->
+      <span id="userGreeting" class="text-white" style="font-weight:600; display:none;"></span>
+      
+      <!-- Logout Button -->
+      <button type="button" id="logoutBtn" onclick="logout()" class="btn btn-danger btn-sm">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs p-2">
+    <li class="nav-item">
+      <a data-page="dashboard" onclick="showPage('dashboard')" class="nav-link active" href="#">
+        <i class="fa-solid fa-gauge"></i> Dashboard
+      </a>
+    </li>
+    <li class="nav-item">
+      <a data-page="appointment" onclick="showPage('appointment')" class="nav-link" href="#">
+        <i class="fa-solid fa-calendar-check"></i> Appointments
+      </a>
+    </li>
+    <li class="nav-item">
+      <a data-page="medication" onclick="showPage('medication')" class="nav-link" href="#">
+        <i class="fas fa-pills"></i> Medications
+      </a>
+    </li>
+    <li class="nav-item">
+      <a data-page="records" onclick="showPage('records')" class="nav-link" href="#">
+        <i class="fas fa-folder-open"></i> Records
+      </a>
+    </li>
+    <li class="nav-item">
+      <a data-page="chat" onclick="showPage('chat')" class="nav-link" href="#">
+        <i class="fa-solid fa-robot"></i> AI Chat
+      </a>
+    </li>
+    <li class="nav-item">
+      <a data-page="profile" onclick="showPage('profile')" class="nav-link" href="#">
+        <i class="fa-solid fa-id-card"></i> Profile
+      </a>
+    </li>
+  </ul>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="container mt-4">
+    <h3 class="mb-4"><i class="fa-solid fa-gauge"></i> Health Dashboard</h3>
+
+    <div class="row g-3">
+      <!-- BMI Calculator -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card p-3 h-100">
+          <h5><i class="fa-solid fa-scale-balanced"></i> BMI Calculator</h5>
+          <input id="height" type="number" class="form-control mb-2" placeholder="Height (cm)">
+          <input id="weight" type="number" class="form-control mb-2" placeholder="Weight (kg)">
+          <button type="button" class="btn btn-primary" onclick="calculateBMI()">
+            <i class="fas fa-calculator"></i> Calculate
+          </button>
+          <p id="bmiResult" class="mt-3 mb-0"></p>
+        </div>
+      </div>
+
+      <!-- Water Intake -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card p-3 h-100">
+          <h5><i class="fa-solid fa-droplet"></i> Water Intake Tracker</h5>
+          <input id="water" type="number" class="form-control mb-2" placeholder="Water today (ml)">
+          <button type="button" class="btn btn-info" onclick="trackWater()">
+            <i class="fas fa-plus"></i> Update Progress
+          </button>
+          <div class="progress mt-3" style="height: 25px;">
+            <div id="waterBar" class="progress-bar" style="width:0%">0%</div>
+          </div>
+          <small class="text-muted mt-2">Goal: 3000ml daily</small>
+        </div>
+      </div>
+
+      <!-- Daily Health Tip -->
+      <div class="col-md-12 col-lg-4">
+        <div class="card p-3 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+          <h5><i class="fa-solid fa-lightbulb"></i> Daily Health Tip</h5>
+          <p id="healthTip" class="mb-0">Loading tip...</p>
+          <button class="btn btn-light btn-sm mt-2" onclick="loadHealthTip()">
+            <i class="fas fa-refresh"></i> New Tip
+          </button>
+        </div>
+      </div>
+
+      <!-- Calorie Calculator -->
+      <div class="col-md-6">
+        <div class="card p-3">
+          <h5><i class="fa-solid fa-fire-flame-curved"></i> Daily Calorie Recommendation</h5>
+          <div class="row g-2">
+            <div class="col-6">
+              <input id="calAge" type="number" class="form-control" placeholder="Age">
+            </div>
+            <div class="col-6">
+              <select id="calGender" class="form-control">
+                <option value="">Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+          </div>
+          <select id="calGoal" class="form-control mt-2">
+            <option value="">Select Goal</option>
+            <option value="lose">Lose Weight</option>
+            <option value="maintain">Maintain Weight</option>
+            <option value="gain">Gain Weight</option>
+          </select>
+          <button type="button" class="btn btn-primary mt-2" onclick="calculateCalories()">
+            <i class="fas fa-calculator"></i> Calculate
+          </button>
+          <p id="calResult" class="mt-3 mb-0"></p>
+        </div>
+      </div>
+
+      <!-- Heart Rate Info -->
+      <div class="col-md-6">
+        <div class="card p-3">
+          <h5><i class="fa-solid fa-heart-pulse"></i> Heart Rate Zones</h5>
+          <div style="line-height: 1.8;">
+            <p class="mb-2"><strong>Resting:</strong> 60–100 bpm</p>
+            <p class="mb-2"><strong>Light Exercise:</strong> 50–60% of max</p>
+            <p class="mb-2"><strong>Fat Burn:</strong> 60–70% of max</p>
+            <p class="mb-0"><strong>Cardio:</strong> 70–85% of max</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPOINTMENTS -->
+  <div id="appointment" class="container mt-4" style="display:none;">
+    <h3 class="mb-4"><i class="fa-solid fa-calendar-check"></i> Book Appointment</h3>
+
+    <div class="card p-4 mb-4">
+      <div class="row g-3">
+        <div class="col-md-5">
+          <label class="form-label fw-bold">Select Doctor</label>
+          <select id="docSelect" class="form-control"></select>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">Date</label>
+          <input id="date" type="date" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Time Slot</label>
+          <select id="timeSelect" class="form-control"></select>
+        </div>
+      </div>
+
+      <div class="mt-3 d-flex gap-2">
+        <button type="button" onclick="addAppointment()" class="btn btn-success">
+          <i class="fas fa-check"></i> Book Appointment
+        </button>
+        <button type="button" class="btn btn-outline-secondary" onclick="clearAppointmentForm()">
+          <i class="fas fa-times"></i> Clear
+        </button>
+      </div>
+    </div>
+
+    <h5 class="mb-3">Your Appointments</h5>
+    <ul id="appointmentList" class="list-group"></ul>
+  </div>
+
+  <!-- MEDICATIONS -->
+  <div id="medication" class="container mt-4" style="display:none;">
+    <h3 class="mb-4"><i class="fas fa-pills"></i> Medication Reminders</h3>
+
+    <!-- Add Medication Form -->
+    <div class="card p-4 mb-4">
+      <h5 class="mb-3">Add New Medication</h5>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <input id="medName" type="text" class="form-control" placeholder="Medication Name">
+        </div>
+        <div class="col-md-3">
+          <input id="medDosage" type="text" class="form-control" placeholder="Dosage (e.g., 500mg)">
+        </div>
+        <div class="col-md-3">
+          <select id="medFrequency" class="form-control">
+            <option value="">Frequency</option>
+            <option value="Morning">Morning</option>
+            <option value="Afternoon">Afternoon</option>
+            <option value="Evening">Evening</option>
+            <option value="Night">Night</option>
+            <option value="Morning,Evening">Morning & Evening</option>
+            <option value="Morning,Afternoon,Evening">3 times a day</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <input id="medDuration" type="number" class="form-control" placeholder="Days">
+        </div>
+      </div>
+      <div class="mt-3 d-flex gap-2">
+        <button type="button" onclick="addMedication()" class="btn btn-success">
+          <i class="fas fa-plus"></i> Add Medication
+        </button>
+        <button type="button" class="btn btn-outline-secondary" onclick="clearMedicationForm()">
+          <i class="fas fa-times"></i> Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- Today's Schedule -->
+    <div class="card p-4 mb-4">
+      <h5 class="mb-3"><i class="fas fa-clock"></i> Today's Schedule</h5>
+      <div id="todayMedications"></div>
+    </div>
+
+    <!-- All Medications -->
+    <div class="card p-4">
+      <h5 class="mb-3"><i class="fas fa-list"></i> All Medications</h5>
+      <ul id="medicationList" class="list-group"></ul>
+    </div>
+  </div>
+
+  <!-- HEALTH RECORDS -->
+  <div id="records" class="container mt-4" style="display:none;">
+    <h3 class="mb-4"><i class="fas fa-folder-open"></i> Health Records</h3>
+
+    <div class="row g-3">
+      <!-- Basic Info -->
+      <div class="col-md-6">
+        <div class="card p-3">
+          <h5><i class="fas fa-user-circle"></i> Basic Information</h5>
+          <div class="mb-2">
+            <label class="form-label">Blood Group</label>
+            <select id="bloodGroup" class="form-control">
+              <option value="">Select</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Height (cm)</label>
+            <input id="recordHeight" type="number" class="form-control" placeholder="e.g., 170">
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Weight (kg)</label>
+            <input id="recordWeight" type="number" class="form-control" placeholder="e.g., 70">
+          </div>
+          <button type="button" onclick="saveBasicInfo()" class="btn btn-primary w-100">
+            <i class="fas fa-save"></i> Save
+          </button>
+        </div>
+      </div>
+
+      <!-- Emergency Contact -->
+      <div class="col-md-6">
+        <div class="card p-3">
+          <h5><i class="fas fa-phone-alt"></i> Emergency Contact</h5>
+          <div class="mb-2">
+            <label class="form-label">Contact Name</label>
+            <input id="emergencyName" type="text" class="form-control" placeholder="Full Name">
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Relationship</label>
+            <input id="emergencyRelation" type="text" class="form-control" placeholder="e.g., Spouse, Parent">
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Phone Number</label>
+            <input id="emergencyPhone" type="tel" class="form-control" placeholder="e.g., +91 9876543210">
+          </div>
+          <button type="button" onclick="saveEmergencyContact()" class="btn btn-danger w-100">
+            <i class="fas fa-save"></i> Save Emergency Contact
+          </button>
+        </div>
+      </div>
+
+      <!-- Medical Conditions -->
+      <div class="col-md-6">
+        <div class="card p-3">
+          <h5><i class="fas fa-heartbeat"></i> Medical Conditions</h5>
+          <textarea id="medicalConditions" class="form-control mb-2" rows="4" placeholder="List any chronic conditions"></textarea>
+          <button type="button" onclick="saveMedicalConditions()" class="btn btn-warning w-100">
+            <i class="fas fa-save"></i> Save
+          </button>
+        </div>
+      </div>
+
+      <!-- Allergies -->
+      <div class="col-md-6">
+        <div class="card p-3">
+          <h5><i class="fas fa-exclamation-triangle"></i> Allergies</h5>
+          <textarea id="allergies" class="form-control mb-2" rows="4" placeholder="List any allergies"></textarea>
+          <button type="button" onclick="saveAllergies()" class="btn btn-warning w-100">
+            <i class="fas fa-save"></i> Save
+          </button>
+        </div>
+      </div>
+
+      <!-- Health Summary -->
+      <div class="col-md-12">
+        <div class="card p-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+          <h5><i class="fas fa-clipboard-check"></i> Health Summary</h5>
+          <div id="healthSummary" style="line-height: 2;">
+            <p><strong>Blood Group:</strong> <span id="summaryBloodGroup">Not set</span></p>
+            <p><strong>Height:</strong> <span id="summaryHeight">Not set</span></p>
+            <p><strong>Weight:</strong> <span id="summaryWeight">Not set</span></p>
+            <p><strong>BMI:</strong> <span id="summaryBMI">Not calculated</span></p>
+            <p class="mb-0"><strong>Emergency Contact:</strong> <span id="summaryEmergency">Not set</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div id="chat" class="container mt-4" style="display:none;">
+    <h3 class="mb-4"><i class="fa-solid fa-robot"></i> AI Health Assistant</h3>
+
+    <div class="card p-4">
+      <div id="chatHistory" class="mb-3" style="max-height:400px; overflow-y:auto; border: 1px solid #ddd; border-radius: 10px; padding: 15px; background: #f8f9fa;"></div>
+
+      <div class="input-group">
+        <input id="chatInput" class="form-control" placeholder="Ask any health question..." aria-label="chat input">
+        <button id="chatSendBtn" class="btn btn-primary" type="button">
+          <i class="fas fa-paper-plane"></i> Send
+        </button>
+      </div>
+      
+      <small class="text-muted mt-2 d-block">
+        <i class="fas fa-info-circle"></i> Try asking about: fever, headache, cold, diet, exercise, sleep, stress
+      </small>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div id="profile" class="container mt-4" style="display:none;">
+    <h3 class="mb-4"><i class="fa-solid fa-id-card"></i> Your Profile</h3>
+    
+    <div class="card p-4">
+      <div class="mb-3">
+        <label class="form-label fw-bold">Full Name</label>
+        <input id="pname" class="form-control" placeholder="Your name">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-bold">Age</label>
+        <input id="page" type="number" class="form-control" placeholder="Your age">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-bold">Bio</label>
+        <textarea id="pbio" class="form-control" rows="4" placeholder="Tell us about yourself..."></textarea>
+      </div>
+      <button type="button" onclick="saveProfile()" class="btn btn-warning">
+        <i class="fas fa-save"></i> Save Profile
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- JS -->
+<script src="script.js"></script>
+</body>
+</html>
