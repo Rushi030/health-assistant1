@@ -11,6 +11,10 @@ from datetime import datetime
 from contextlib import contextmanager
 import hashlib
 import os
+if not os.path.exists("health_assistant.db"):
+    from db_manager import create_database
+    create_database()
+
 
 app = Flask(__name__)
 CORS(app)
@@ -689,4 +693,5 @@ if __name__ == "__main__":
     print("=" * 70 + "\n")
     
     # Run Flask app
+
     app.run(debug=True, host="127.0.0.1", port=5000)
