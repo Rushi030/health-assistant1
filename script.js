@@ -3,7 +3,7 @@
 ***************************/
 
 /************* API Base URL *************/
-const API = "https://health-assistant1-2.onrender.com";
+const API = "https://health-assistant-62u2.onrender.com";
 
 
 
@@ -1018,6 +1018,7 @@ window.onload = () => {
   }
 
 };
+
 
 
 
